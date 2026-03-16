@@ -1,1 +1,1 @@
-(lhs comma rhs)
+[(lhs) comma rhs]

@@ -7,7 +7,7 @@ beforeAll(done => {
 });
 
 describe("Authentication", () => {
-  test("Editing pages", done => {
+  test("/edit GET", done => {
     request(app)
       .get("/edit/Foo")
       .then(res => {
@@ -16,8 +16,23 @@ describe("Authentication", () => {
         done();
       });
   });
+  test("/edit POST", done => {
+    db.createPage("EditAuthExample", "foo bar", (err, page) => {
+      expect(err).toBeNull();
 
-  test("Creating pages", done => {
+      request(app)
+        .post("/edit/" + page.rowid)
+        .type("form")
+        .send({ name: "EditPostExample", content: "hello world" })
+        .then(res => {
+          expect(res.statusCode).toBe(401);
+          expect(res.headers["www-authenticate"]).toBe("Basic");
+          done();
+        });
+    });
+  });
+
+  test("/new GET", done => {
     request(app)
       .get("/new")
       .then(res => {
@@ -25,6 +40,13 @@ describe("Authentication", () => {
         expect(res.headers["www-authenticate"]).toBe("Basic");
         done();
       });
+  });
+  test("/new POST", done => {
+    request(app)
+      .post("/new")
+      .type("form")
+      .send({ name: "FooBarBaz", content: "hello world" })
+      .expect(401, done);
   });
 });
 
@@ -56,7 +78,7 @@ describe("Editing", () => {
         .expect(200, done);
     });
   });
-  test("/edit GET", done => {
+  test("/edit POST", done => {
     db.createPage("EditPostExample", "foo bar", (err, page) => {
       expect(err).toBeNull();
 
@@ -70,8 +92,18 @@ describe("Editing", () => {
   });
 });
 
-test("/all", done => {
-  request(app)
-    .get("/all")
-    .expect(200, done);
+describe("Viewing", () => {
+  test("/all", done => {
+    request(app)
+      .get("/all")
+      .expect(200, done);
+  });
+
+  test("/AnExamplePage", done => {
+    db.createPage("AnExamplePage", "foo bar", () => {
+      request(app)
+        .get("/AnExamplePage")
+        .expect(200, done);
+    });
+  });
 });

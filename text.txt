@@ -1,5 +1,6 @@
 hello
+novel
 world
 
-foo
-c07e640b246c7885cbc3d5c627acbcb2d2ab9c95
+foo bar
+31df1778815171897c907daf454c4419cfaa46f9

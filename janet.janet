@@ -62,14 +62,6 @@
                                      (choice "\r\n"
                                              "\r"
                                              "\n")))
-    # :whitespace
-    # (cmt (capture (sequence (line) (column)
-    #                         (choice (some (set " \f\t\v"))
-    #                                 (choice "\r\n"
-    #                                         "\r"
-    #                                         "\n"))
-    #                         (line) (column)))
-    #      ,|[:whitespace (make-attrs ;(slice $& 0 -2)) (last $&)])
     #
     :comment ,(atom-node :comment
                          '(sequence ";"
@@ -100,14 +92,6 @@
                   :symbol)
     # see "Backquote"
     :backquote ,(reader-macro-node :backquote "`")
-    # :backquote
-    # (cmt (capture (sequence (line) (column)
-    #                         "`"
-    #                         (any :non-form)
-    #                         :form
-    #                         (line) (column)))
-    #      ,|[:backquote (make-attrs ;(slice $& 0 2) ;(slice $& -4 -2))
-    #         ;(slice $& 2 -4)])
     # see "Anonymous Functions"
     :function ,(reader-macro-node :function "#'")
     # see "Quoting"
@@ -119,22 +103,6 @@
     #
     # see "Cons Cell Type"
     :list ,(collection-node :list "(" ")")
-    # :list
-    # (cmt
-    #  (capture
-    #    (sequence
-    #      (line) (column)
-    #      "("
-    #      (any :input)
-    #      (choice ")"
-    #              (error
-    #                (replace (sequence (line) (column))
-    #                         ,|(string/format
-    #                             "line: %p column: %p missing %p for %p"
-    #                             $0 $1 ")" :list))))
-    #      (line) (column)))
-    #  ,|[:list (make-attrs ;(slice $& 0 2) ;(slice $& -4 -2))
-    #     ;(slice $& 2 -4)])
     # see "Vectors"
     :vector ,(collection-node :vector "[" "]")
     # see "Char-Table Type"
@@ -290,6 +258,10 @@
   # =>
   '(:whitespace @{:bc 1 :bl 1 :ec 2 :el 1} " ")
 
+  (get (peg/match loc-grammar "; hi there") 2)
+  # =>
+  '(:comment @{:bc 1 :bl 1 :ec 11 :el 1} "; hi there")
+
   (get (peg/match loc-grammar "8.3") 2)
   # =>
   '(:float @{:bc 1 :bl 1 :ec 4 :el 1} "8.3")
@@ -302,6 +274,10 @@
   # =>
   '(:symbol @{:bc 1 :bl 1 :ec 7 :el 1} ":smile")
 
+  (get (peg/match loc-grammar `"fun"`) 2)
+  # =>
+  '(:string @{:bc 1 :bl 1 :ec 6 :el 1} "\"fun\"")
+
   (get (peg/match loc-grammar "[8]") 2)
   # =>
   '(:vector @{:bc 1 :bl 1
@@ -309,12 +285,30 @@
             (:integer @{:bc 2 :bl 1
                         :ec 3 :el 1} "8"))
 
+  (get (peg/match loc-grammar "(1+ 1)") 2)
+  # =>
+  '(:list @{:bc 1 :bl 1
+            :ec 7 :el 1}
+          (:symbol @{:bc 2 :bl 1
+                     :ec 4 :el 1} "1+")
+          (:whitespace @{:bc 4 :bl 1
+                         :ec 5 :el 1} " ")
+          (:integer @{:bc 5 :bl 1
+                      :ec 6 :el 1} "1"))
+
   (get (peg/match loc-grammar "`x") 2)
   # =>
   '(:backquote @{:bc 1 :bl 1
                  :ec 3 :el 1}
                (:symbol @{:bc 2 :bl 1
                           :ec 3 :el 1} "x"))
+
+  (try
+    (peg/match loc-grammar "(+ 1")
+    ([e]
+      e))
+  # =>
+  `line: 1 column: 5 missing ")" for :list`
 
   )
 

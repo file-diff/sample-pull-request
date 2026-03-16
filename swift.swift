@@ -1,7 +1,7 @@
 func f(_ x: Int) -> Int {
-  x * 2
+  x * 3
 }
 
 public class Foo: Bar {
-  public func stuff() {}
+  private func stuff() {}
 }

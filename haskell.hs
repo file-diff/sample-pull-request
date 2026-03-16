@@ -1,8 +1,9 @@
+import System.Process
 
-foo x = x + 1
+foo x y = x + 1 + W.peek y
 
 bar _ = 'c'
 
--- | Hello world
+-- | Goodbye world
 isOne 1 = True
 isOne _ = False

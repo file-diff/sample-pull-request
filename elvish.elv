@@ -3,12 +3,12 @@
 curl https://api.github.com/repos/elves/elvish/issues |
   from-json | all (one) |
   each {|x| echo (exact-num $x[number]): $x[title] } |
-  head -n 7
+  head -n 5
 
-if $true { echo good } else { echo bad }
+if $false { echo good } else { echo bad }
 
 for x [lorem ipsum] {
-  echo $x.pdf
+  echo $x.rs
 }
 
  try {

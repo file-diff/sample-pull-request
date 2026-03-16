@@ -1,3 +1,3 @@
-|# A block comment before a very simple function. #|
-(define (add x y)                       ; This function returns the sum of its arguments
-  (+ x y))
+|# A block comment before a simple function, but changed. #|
+(define (sub x y)                       ; This function returns the difference of its arguments
+  (- x y))

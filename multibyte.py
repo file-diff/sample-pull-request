@@ -1,1 +1,1 @@
-"foo€".format()
+"bar€".format()

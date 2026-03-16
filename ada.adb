@@ -1,1 +1,7 @@
- with Ada.Text_IO; use Ada.Text_IO; procedure Hello is begin Put_Line ("Hello WORLD!"); end Hello;
+with Ada.Text_IO;
+
+procedure Hello is
+  package TIO renames Ada.Text_IO;
+begin
+  TIO.Put_Line ("Hello World!");
+end Hello;

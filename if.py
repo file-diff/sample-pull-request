@@ -1,3 +1,3 @@
 if x:
     foo
-    bar
+bar

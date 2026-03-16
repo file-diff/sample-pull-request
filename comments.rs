@@ -1,23 +1,23 @@
 // Unchanged comment.
 f1();
 
-// Changing a single word.
+// Changing a single word here.
 f2();
 
-// A completely different sentence.
+// A single comment about something.
 f3();
 
-if true {
-    /* A multiline comment
-     * whose indentation changes.
-     */
-}
+/* A multiline comment
+ * whose indentation changes.
+ */
 
-// An example environment variable: FOO="a-b"
+// An example environment variable: FOO="x-y"
 
-// A single line comment.
+// A single line comment. It has become
+// a big block comment. Lorem ipsum dolor sit amet,
+// consectetur adipiscing elit
 
 /** A doc comment.
  *
- * This line will change.
+ * This line has changed.
  */

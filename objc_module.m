@@ -11,17 +11,18 @@
 #import "PopHttpServer.h"
 #import "NMKit.h"
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 
 @interface PopHttpServer ()
 @property (readonly) CFSocketRef socket;
 @property (readonly) NSFileHandle *listenHandle;
-@property (readonly) NSMapTable<NSFileHandle *, id> *httpMessages;
+@property (readonly) NSMapTable<NSFileHandle *, NSObject *> *httpMessages;
 @property (readonly) NSMutableDictionary<NSString *, PopHttpRequestHandler> *handlers;
 @property NSString *lastError;
 @end
 
-const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
+const NSArray *expressions=@[@NO, @7, @(YES), @3.15, @(9), @-11, @"Goodbye"];
 
 @implementation PopHttpServer
 
@@ -36,15 +37,16 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     return self;
 }
 
-// warning: handlers will be called on a background thread
+// warning: handlers will be called on a background thread!!
 - (void)registerHandler:(NSString *)pathPrefix block:(PopHttpRequestHandler)myblock
 {
     [self.handlers setObject:myblock forKey:pathPrefix];
 }
 
-- (void)newHttpMessageForHandle:(NSFileHandle *)connectionHandle
+- (void)newHttpMessageForHandle:(NSFileHandle *const)connectionHandle
 {
-    [self.httpMessages setObject:CFBridgingRelease(CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE)) forKey:connectionHandle];
+    [self.httpMessages setObject:CFBridgingRelease(CFHTTPMessageCreateEmpty(kCFAllocatorDefault, TRUE))
+                          forKey:connectionHandle];
 }
 
 - (BOOL)start
@@ -52,7 +54,9 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     NMLogFine(@"Attempting to start HTTP server on port %@", @(self.port));
 
     // create socket
-    self->_socket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
+    self->_socket = CFSocketCreate(kCFAllocatorDefault,
+        PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 6, NULL
+    );
     if (!self.socket)
     {
         self.lastError=@"Unable to create socket";
@@ -80,9 +84,8 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     NSData *const addressData = [NSData dataWithBytes:&address length:sizeof(address)];
     if (CFSocketSetAddress(self.socket, (__bridge CFDataRef)addressData) != kCFSocketSuccess)
     {
-        self.lastError=@"Unable to bind socket to address.";
-        [self stop];
-        return NO;
+        self.lastError=@"Unable to bind socket.";
+        [self stop]; return NO;
     }
 
     // add listener for connections
@@ -102,7 +105,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
 
 }
 
-// Undo everything in start
+// Undo everything that was done in start
 - (void)stop
 {
     // close down all open connections
@@ -151,6 +154,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
         [connectionHandle waitForDataInBackgroundAndNotify];
     }
     NMLogFine(@"Incoming connection %@", connectionHandle);
+
     // accept another connection
     [self.listenHandle acceptConnectionInBackgroundAndNotify];
 }
@@ -164,7 +168,8 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
 
     // perform remaining processing in backgroumd thread
     NMRunAsyncInBackground(^{
-        const DataOutcome outcome=[self processHttpDataForMessage:httpMessage connection:connectionHandle];
+        const DataOutcome outcome=[self processHttpDataForMessage:httpMessage
+                                                       connection:connectionHandle];
         NMRunAsyncOnMainThread(^{
             switch (outcome) {
                 case DataOutcomeClose:
@@ -202,8 +207,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     NMLogFine(@"Data: %@ bytes received on connection %@", @(data.length), connectionHandle);
 
     // close if EOF or error parsing into http message
-    if (!data.length ||
-        !httpMessage ||
+    if (!data.length || httpMessage ||
         !CFHTTPMessageAppendBytes(httpMessage, data.bytes, data.length)) {
         return DataOutcomeClose;
     }
@@ -230,7 +234,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     }
 
     // get received data length
-    NSInteger receivedLength=0;
+    NSInteger receivedLength;
     CFDataRef bodyData = CFHTTPMessageCopyBody(httpMessage);
     if (bodyData) {
         receivedLength = CFDataGetLength(bodyData);
@@ -266,7 +270,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     NSData *const body=CFBridgingRelease(CFHTTPMessageCopyBody(httpMessage));
 
 #ifdef DEBUG
-    log(@"%@ %@", method, url.absoluteURL);
+    log(@"%@ value is %@", method, url.absoluteURL);
     log(@"Body: %@", body);
 #endif
 
@@ -289,7 +293,7 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     if (res) {
         [self respondWithBody:res[@"body"] status:res[@"status"] contentType:res[@"contentType"] headers:res[@"headers"] handle:connectionHandle];
     } else {
-        [self respondWithBody:@"Not found\n" status:@(404) contentType:@"text/plain" headers:@{} handle:connectionHandle];
+        // redo
     }
 }
 
@@ -313,8 +317,8 @@ const NSArray *expressions=@[@YES, @6, @(NO), @3.14, @(-9), @-10, @"Hello"];
     [headers enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull val, BOOL * _Nonnull stop) {
         CFHTTPMessageSetHeaderFieldValue(response, (__bridge CFStringRef)key, (__bridge CFStringRef)val);
     }];
-    CFHTTPMessageSetHeaderFieldValue(response, CFSTR("Content-Type"), (__bridge CFStringRef)contentType);
-    CFHTTPMessageSetHeaderFieldValue(response, CFSTR("Content-Length"), (__bridge CFStringRef)[NSString stringWithFormat:@"%@", @(bodyData.length)]);
+    CFHTTPMessageSetHeaderFieldValue(response, CFSTR("content-type"), (__bridge CFStringRef)contentType);
+    CFHTTPMessageSetHeaderFieldValue(response, CFSTR("content-length"), (__bridge CFStringRef)[NSString stringWithFormat:@"%@", @(bodyData.length)]);
     CFHTTPMessageSetBody(response, (__bridge CFDataRef)bodyData);
     CFDataRef messageData = CFHTTPMessageCopySerializedMessage(response);
     @try

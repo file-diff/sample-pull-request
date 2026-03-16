@@ -5,9 +5,9 @@ class Foo {
    * <p>More stuff here.</p>
    *
    * @param stuff {@code String} foo bar
-   * @returns {@code Other}
+   * @returns {@code int}
    */
-  public static Other blah() {
+  protected static int blah() {
     throw new Exception("before");
   }
 }

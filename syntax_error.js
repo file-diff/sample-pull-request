@@ -1,3 +1,3 @@
-if (true) {
-  foo(1);
+if (false) {
+  foo(2);
 }}

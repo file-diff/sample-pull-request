@@ -1,9 +1,6 @@
 ---
-foo: [foobar]
+foo: [bar, foobar]
 hello:
   - "world"
+  - 'item'
   - other
-
-stuff: |
-  a
-  b

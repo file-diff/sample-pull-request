@@ -1,9 +1,12 @@
-(format "SoloWiki Viewing: %s" name)
+(format "%s: %s" (site-name) name)
 
 (defcustom deadgrep-max-buffers
   4
-  "Deadgrep will kill the least recently used results buffer
-if there are more than this many.
+  "The maximum number of deadgrep results buffers.
+
+If the number of results buffers exceeds this value, deadgrep
+will kill results buffers. The least recently used buffers are
+killed first.
 
 To disable cleanup entirely, set this variable to nil."
   :type '(choice

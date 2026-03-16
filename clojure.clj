@@ -3,6 +3,6 @@
 (defn example
   [x]
   "Does stuff."
-  (println "hello!")
-  {:more (inc x)
-   :less (dec x)})
+  (-> {:more (inc x)
+       :less (dec x)}
+      (assoc :twice (+ x x))))

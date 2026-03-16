@@ -3,8 +3,6 @@
   (let ((root default-directory)
         (project (project-current)))
     (when project
-      (-when-let (roots (project-roots project))
-        (setq root (car roots))))
+      (setq root (project-root project)))
     (when root
       (deadgrep--lookup-override root))))
-
