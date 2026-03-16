@@ -1,3 +1,4 @@
 before
- x
-after
+ foo x
+y
+afterff
