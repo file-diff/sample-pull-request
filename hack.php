@@ -1,7 +1,7 @@
 <?hh
 
 /** 
- * Do stuff
+ * Do stuff2
  */
 function foo(): vec<int> {
   $x = "foo";
