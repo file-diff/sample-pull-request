@@ -1,4 +1,4 @@
-let stuff x =
+let stuff2 x =
   x + 1
 
 type foo =

@@ -3,5 +3,5 @@ func f(_ x: Int) -> Int {
 }
 
 public class Foo: Bar {
-  public func stuff() {}
+  public func stuff2() {}
 }

@@ -2,7 +2,7 @@
 
 (defn example
   [x]
-  "Does stuff."
+  "Does stuff2."
   (println "hello!")
   {:more (inc x)
    :less (dec x)})
