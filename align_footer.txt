@@ -1,4 +1,4 @@
 before
  foo x
 y
-afterf
+afterff

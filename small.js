@@ -7,7 +7,7 @@ beforeAll(done => {
 });
 
 describe("Authentication", () => {
-  test("Editing pages", done => {
+  test("/edit GET", done => {
     request(app)
       .get("/edit/Foo")
       .then(res => {

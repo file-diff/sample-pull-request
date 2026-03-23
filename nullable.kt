@@ -1,3 +1,3 @@
 class Foo {
-    val str: String?
+    val str: String
 }

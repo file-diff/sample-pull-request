@@ -1,45 +1,47 @@
-module Main exposing (blue, green, list, x, y, z)
+module Main exposing
+    ( blue
+    , list
+    , x
+    , y
+    )
 
 
-{- bar
+{- foo
  -}
 list : List Int
 list =
-    [ 1, 2, 3 ]
+    [ 1
+    , 2
+    , 3
+    , 4
+    ]
 
 
 blue : a -> String
 blue =
-    always "blue"
+    \_ -> "blue"
 
 
-green : a -> String
+green : String
 green =
-    always "blue"
+    "yellow" ++ "blue"
 
 
-y : Int
-
-
+x : Int
 x =
-    (*) 2 4
+    (*) 2 <| 4
 
 
 y : Int
 y =
-    (*) 2 4
+    4 |> (*) 2
 
 
-z : String
-z =
-    "abc"
-
-
-fn : () -> Int -> List String -> String
-fn _ n strings =
-    let
-        foo : List String -> String
-        foo =
-            String.join (String.fromInt n)
-    in
-    foo strings
+fn :
+    ()
+    -> Int
+    -> List String
+    -> ()
+    -> String
+fn () n strings () =
+    String.join (String.fromInt n) strings

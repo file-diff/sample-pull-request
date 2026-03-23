@@ -16,8 +16,9 @@ pub fn main() {
   let db = start_database_connection_pool()
   let web = routes.stack(application_secret, db)
 
-  string.concat(["Listening on localhost:", int.to_string(port), " ✨"])
-  |> log.info
+  let log_string =
+    string.concat(["Listening on localhost:", int.to_string(port), " ✨"])
+  log.info(log_string)
 
   let assert Ok(_) = elli.become(web, on_port: port)
 }
@@ -29,7 +30,7 @@ pub fn start_database_connection_pool() -> pgo.Connection {
     |> result.lazy_unwrap(fn() {
       pgo.Config(
         ..pgo.default_config(),
-        host: "localhost",
+        host: "0.0.0.0",
         database: "gleam_todomvc_dev",
         user: "postgres",
         password: option.Some("postgres"),
@@ -47,5 +48,5 @@ fn load_application_secret() -> String {
 fn load_port() -> Int {
   os.get_env("PORT")
   |> result.then(int.parse)
-  |> result.unwrap(3000)
+  |> result.unwrap(8080)
 }

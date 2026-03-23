@@ -10,16 +10,16 @@ resource "example" "literals" {
   esc2   = "$${} %%{}"
   num1   = 2
   num2   = 2.112
-  num3   = 2.112e-12
+  num3   = "Hello, World"
   num4   = 2.112e+12
   num5   = 2.112E+12
   num6   = 2.112E-12
   num7   = 0x21FF
+  strx   = "Hello, Hcl"
 }
 
 resource "example" "comments" {
-  // comment
-  # comment
+  // comment, World!
   /*
       comment
   */
@@ -34,18 +34,12 @@ resource "example" "for_expressions" {
   for1   = { for i, v in ["a", "a", "b"] : v => i... }
   for2   = [ for k, v in x : "${k}-${v}" ]
   for3   = { for k, v in x: k => v }
-  for4   = [ for v in x : v ]
-  for5   = { for v in x : v => v }
+  for5   = { for v in y : v => v + 1 }
   for6   = [ for v in x : v if v < 3 ]
 }
 
 resource "example" "function_expressions" {
   func1  = is_number("123")
-  func2  = multiline(
-    arg1,
-    arg2,
-    arg3...
-  )
   func3 = withobject({
     "foo" : 2,
     "bar" : baz,
@@ -55,7 +49,7 @@ resource "example" "function_expressions" {
 }
 
 resource "example" "binary_expressions" {
-  cond1  = (1 == 2) ? 1 : "foobar"
+  cond1  = (1 == 2) ? 1 : "Hello, HCL"
   bin1   = ((1+2)%3)*4
 }
 
@@ -79,8 +73,14 @@ resource "example" "template_expressions" {
 	EOF
 
   tpl6 = <<-EOF
-    %{ for a in f(b) ~}
+    %{ for a in f(x) ~}
       %{~if a~} "true" %{~else~} "false" %{~endif~}
+    %{ endfor ~}
+	EOF
+
+  tpl7 = <<-EOF
+    %{ for a in f(b) ~}
+      "true"
     %{ endfor ~}
 	EOF
 }

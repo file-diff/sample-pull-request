@@ -2,5 +2,5 @@ let x =
   "
 foo
 
-bar
+novel
 "

@@ -1,10 +1,11 @@
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  document.getElementById("root"));
+  <h1 className="title">
+      <span>Hello</span>, world!
+  </h1>,
+  document.getElementById("root")
+);
 
 var x = (
-  <div>
-      <p>
-          foo
-      </p>
-  </div>);
+  <p>
+      foo
+  </p>);

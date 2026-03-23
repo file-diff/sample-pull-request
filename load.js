@@ -12,37 +12,14 @@ var models = require("./models.js");
 
 var total = 0;
 
-var MIME_TYPES = {
-  ".css": "text/css",
-  ".html": "text/html",
-  ".js": "application/javascript",
-  "": "text/x-markdown",
-};
-
-// Write localPath to the database.
-//
-// If no resourcePath is provided, convert "node_modules/foo/bar.js" to
-// "foo/bar.js".
-function createNodeModuleResource(localPath, resourcePath) {
-  if (resourcePath == null) {
-    resourcePath = path.relative("node_modules", localPath);
-  }
-
-  return function (cb) {
-    total++;
-    new models.Resource({
-      path: resourcePath,
-      mimeType: MIME_TYPES[path.extname(localPath)],
-      content: fs.readFileSync(localPath, {
-        encoding: "utf8",
-      }),
-      created: Date.now(),
-      bootstrapPath: localPath,
-    }).save(cb);
-  };
-}
-
 function createResource(resourcePath, localPath) {
+  var MIME_TYPES = {
+    ".css": "text/css",
+    ".html": "text/html",
+    ".js": "application/javascript",
+    "": "text/x-markdown",
+  };
+
   return function (cb) {
     total++;
     new models.Resource({
@@ -92,89 +69,113 @@ async.series(
           }),
 
           // Base codemirror
-          createNodeModuleResource(
+          createResource(
+            "codemirror/lib/codemirror.css",
             "node_modules/codemirror/lib/codemirror.css"
           ),
-          createNodeModuleResource("node_modules/codemirror/lib/codemirror.js"),
+          createResource(
+            "codemirror/lib/codemirror.js",
+            "node_modules/codemirror/lib/codemirror.js"
+          ),
 
           // Editor conveniences
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/edit/closebrackets.js",
             "node_modules/codemirror/addon/edit/closebrackets.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/edit/matchbrackets.js",
             "node_modules/codemirror/addon/edit/matchbrackets.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/selection/active-line.js",
             "node_modules/codemirror/addon/selection/active-line.js"
           ),
 
           // Linting in editor.
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/lint/lint.css",
             "node_modules/codemirror/addon/lint/lint.css"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/lint/lint.js",
             "node_modules/codemirror/addon/lint/lint.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/lint/javascript-lint.js",
             "node_modules/codemirror/addon/lint/javascript-lint.js"
           ),
 
           // Basic, dumb completion (dabbrev style).
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/show-hint.css",
             "node_modules/codemirror/addon/hint/show-hint.css"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/show-hint.js",
             "node_modules/codemirror/addon/hint/show-hint.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/anyword-hint.js",
             "node_modules/codemirror/addon/hint/anyword-hint.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/css-hint.js",
             "node_modules/codemirror/addon/hint/css-hint.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/html-hint.js",
             "node_modules/codemirror/addon/hint/html-hint.js"
           ),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/addon/hint/xml-hint.js",
             "node_modules/codemirror/addon/hint/xml-hint.js"
           ),
 
           // Syntax highlighting
-          createNodeModuleResource(
+          createResource(
+            "codemirror/mode/javascript/javascript.js",
             "node_modules/codemirror/mode/javascript/javascript.js"
           ),
-          createNodeModuleResource("node_modules/codemirror/mode/meta.js"),
-          createNodeModuleResource(
+          createResource(
+            "codemirror/mode/meta.js",
+            "node_modules/codemirror/mode/meta.js"
+          ),
+          createResource(
+            "codemirror/mode/markdown/markdown.js",
             "node_modules/codemirror/mode/markdown/markdown.js"
           ),
-          createNodeModuleResource("node_modules/codemirror/mode/xml/xml.js"),
-          createNodeModuleResource("node_modules/codemirror/mode/css/css.js"),
-
-          createNodeModuleResource("node_modules/requirejs/require.js"),
-
-          createNodeModuleResource(
-            "node_modules/backbone/backbone.js",
-            "backbone.js"
+          createResource(
+            "codemirror/mode/xml/xml.js",
+            "node_modules/codemirror/mode/xml/xml.js"
+          ),
+          createResource(
+            "codemirror/mode/css/css.js",
+            "node_modules/codemirror/mode/css/css.js"
           ),
 
-          createNodeModuleResource(
-            "node_modules/underscore/underscore.js",
-            "underscore.js"
+          createResource(
+            "requirejs/require.js",
+            "node_modules/requirejs/require.js"
           ),
 
-          createNodeModuleResource(
-            "node_modules/jquery/dist/jquery.js",
-            "jquery.js"
+          createResource("backbone.js", "node_modules/backbone/backbone.js"),
+
+          createResource(
+            "underscore.js",
+            "node_modules/underscore/underscore.js"
           ),
 
-          createNodeModuleResource(
-            "node_modules/marked/lib/marked.js",
-            "marked/marked.js"
+          createResource("jquery.js", "node_modules/jquery/dist/jquery.js"),
+
+          createResource(
+            "marked/marked.js",
+            "node_modules/marked/lib/marked.js"
           ),
 
-          createNodeModuleResource(
-            "node_modules/handlebars/dist/handlebars.js",
-            "handlebars/handlebars.js"
+          createResource(
+            "handlebars/handlebars.js",
+            "node_modules/handlebars/dist/handlebars.js"
           ),
 
           // Notifications
@@ -192,8 +193,10 @@ async.series(
             localPath: "icons/Error-48.png",
           }),
 
-          createNodeModuleResource("node_modules/mocha/mocha.js"),
-          createNodeModuleResource("node_modules/mocha/mocha.css"),
+          // TODO: it would be nice to have more systematic naming
+          // of our paths, based on the node_modules path.
+          createResource("mocha/mocha.js", "node_modules/mocha/mocha.js"),
+          createResource("mocha/mocha.css", "node_modules/mocha/mocha.css"),
 
           createResource("metawiki/index.html", "src/frontend/index.html"),
 

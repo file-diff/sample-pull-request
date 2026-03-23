@@ -1,7 +1,5 @@
 void test() {
-    if (x) {
-        Object().a().b();
-    }
+    Object()..a()..b();
 
-    expect(a.b(c.d()).x);
+    expect(a.b.c.d()!.x);
 }

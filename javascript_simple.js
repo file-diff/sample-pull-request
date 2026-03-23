@@ -1,9 +1,11 @@
 // hello
-foo();
-bar(1);
-baz();
+if (true) {
+  foo();
+  bar(2);
+  baz();
+}
 
 var people = [
-  "john", "harry", "dick", "eric",
-  "jenny", "alexandra",
+  "john", "harry", "dick", "yvonne",
+  "eric", "jenny", "alexandra",
 ];

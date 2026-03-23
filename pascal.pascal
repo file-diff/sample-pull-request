@@ -13,12 +13,10 @@ begin
   if N < K then
     Result:= 0      // Error
   else begin
-    if K > N - K then
-      K:= N - K;    // Optimization
     Result:= 1;
     L:= 0;
     while L < K do begin
-      Result:= Result * (N - L);
+      Result:= Result * (N - 1);
       Inc(L);
       Result:= Result div L;
     end;

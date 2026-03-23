@@ -1,21 +1,21 @@
 package foo
 
 // A Scala program.
-import foo.Bar
+import foo.Baz
 
 class Foo {
 
-  def blah(): Int {
+  private def blah(): Other {
     /* foo */
-    throw new Exception("before");
+    throw new Exception("after");
   }
 
-  var result = Option.empty[T]                      
+  var result = Option.empty[T]
+  val fn = pf.lift
   object traverser extends SimpleTraverser {
     override def apply(t: Tree): Unit = {
-      if (result.isEmpty && pf.isDefinedAt(t)) {
-        result = Some(pf(t))
-      } else if (result.isEmpty) {
+      result = fn(t).orElse(result)
+      if (result.nonEmpty) {
         super.apply(t)
       }
     }

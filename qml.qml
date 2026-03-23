@@ -1,6 +1,6 @@
 // Taken from https://doc.qt.io/qt-6/qmlapplications.html
-import QtQuick
-import QtQuick.Controls
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 ApplicationWindow {
     width: 400
@@ -9,13 +9,20 @@ ApplicationWindow {
 
     Button {
         id: button
+        hoverEnabled: true
         text: "A Special Button"
         background: Rectangle {
             implicitWidth: 100
             implicitHeight: 40
-            color: button.down ? "#d6d6d6" : "#f6f6f6"
+            color: {
+                if (button.down || button.hovered) {
+                    "#d6d6d6"
+                } else {
+                    "#f6f6f6"
+                }
+            }
             border.color: "#26282a"
-            border.width: 1
+            border.width: button.down ? 2 : 1
             radius: 4
         }
     }

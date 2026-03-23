@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013 Wilfred Hughes
 
 ;; Author: Wilfred Hughes <me@wilfred.me.uk>
-;; Version: 0.5
+;; Version: 0.6
 ;; Keywords: hash table, hash map, hash
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,9 @@
 (defun ht-from-alist (alist)
   "Create a hash table with initial values according to ALIST."
   (let ((h (ht-create)))
-    (dolist (pair alist h)
+    ;; the first key-value pair in an alist gets precedence, so we
+    ;; start from the end of the list:
+    (dolist (pair (reverse alist) h)
       (let ((key (car pair))
             (value (cdr pair)))
         (ht-set h key value)))))
@@ -118,7 +120,7 @@ If KEY isn't present, return DEFAULT (nil if not specified)."
 
 (defun ht-items (table)
   "Return a list of two-element lists '(key value) from TABLE."
-  (let ((items))
+    (let ((items))
     (maphash (lambda (key value) (setq items (cons (list key value) items))) table)
     items))
 
